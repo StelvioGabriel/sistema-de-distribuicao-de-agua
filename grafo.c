@@ -19,7 +19,7 @@ int adicionar_estacao(RedeDeAgua* rede, const char* nome, const char* tipo)
     if (rede->num_estacoes >= MAX_ESTACOES)
 	{
         printf("Erro: Limite maximo de estacoes atingido.\n");
-        return -1;
+        return 0;
     }
 
     Estacao* nova = (Estacao*)malloc(sizeof(Estacao));
