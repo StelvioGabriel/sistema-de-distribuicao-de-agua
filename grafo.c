@@ -8,7 +8,7 @@ RedeDeAgua* inicializar_rede()
     RedeDeAgua* rede = (RedeDeAgua*)malloc(sizeof(RedeDeAgua));
     if (rede == NULL) {
         printf("Erro de alocacao de memoria para a rede.\n");
-        return 0;
+        return NULL;
     }
     rede->num_estacoes = 0;
     return rede;
@@ -19,7 +19,7 @@ int adicionar_estacao(RedeDeAgua* rede, const char* nome, const char* tipo)
     if (rede->num_estacoes >= MAX_ESTACOES)
 	{
         printf("Erro: Limite maximo de estacoes atingido.\n");
-        return 0;
+        return NULL;
     }
 
     Estacao* nova = (Estacao*)malloc(sizeof(Estacao));
@@ -44,7 +44,7 @@ void adicionar_cano(RedeDeAgua* rede, int id_origem, int id_destino, int capacid
     Cano* novo_cano = (Cano*)malloc(sizeof(Cano));
     if (novo_cano == NULL) {
         printf("Erro de alocacao de memoria\n");
-        return 0 ; 
+        return NULL ; 
     }
     
     novo_cano->id_destino = id_destino;
