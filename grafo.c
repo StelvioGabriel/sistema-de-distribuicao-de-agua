@@ -3,6 +3,10 @@
 #include <string.h>
 #include "grafo.h"
 
+/*
+ Funcao auxiliar para remover as quebras de linha (\n ou \r\n) 
+  que a funcao fgets captura ao ler de ficheiros de texto.
+ */
 static void remover_quebra_linha(char* texto)
 {
     if (texto == NULL) {
@@ -11,7 +15,10 @@ static void remover_quebra_linha(char* texto)
 
     texto[strcspn(texto, "\r\n")] = '\0';
 }
-
+/*
+ Inicializa a estrutura base da Rede de Agua (Grafo).
+  Retorna o ponteiro para a rede ou NULL em caso de falha de memoria.
+ */
 RedeDeAgua* inicializar_rede()
 {
 	int i = 0;
@@ -20,7 +27,7 @@ RedeDeAgua* inicializar_rede()
         printf("Erro de alocacao de memoria para a rede.\n");
         return NULL;
     }
-
+ // Inicializa todos os ponteiros de estacoes como NULL por seguranca
     rede->num_estacoes = 0;
     for (i = 0; i < MAX_ESTACOES; i++) {
         rede->estacoes[i] = NULL;
@@ -28,9 +35,13 @@ RedeDeAgua* inicializar_rede()
 
     return rede;
 }
-
+/*
+ Adiciona um novo vertice (Estacao) ao Grafo.
+ Retorna o ID (indice) da estacao adicionada ou -1 em caso de erro.
+ */
 int adicionar_estacao(RedeDeAgua* rede, const char* nome, const char* tipo)
 {
+	// Validacao de seguranca para evitar acessos invalidos
     if (rede == NULL || nome == NULL || tipo == NULL) {
         return -1;
     }
@@ -50,16 +61,20 @@ int adicionar_estacao(RedeDeAgua* rede, const char* nome, const char* tipo)
 
     strcpy(nova->nome, nome);
     strcpy(nova->tipo, tipo);
-    nova->primeiro_cano = NULL;
+    nova->primeiro_cano = NULL; // Inicia a lista de adjacencia vazia
 
     int id = rede->num_estacoes;
     rede->estacoes[id] = nova;
     rede->num_estacoes++;
     return id;
 }
+/*
+ Adiciona uma nova aresta (Cano) direcionada conectando duas estacoes
+ */
 
 void adicionar_cano(RedeDeAgua* rede, int id_origem, int id_destino, int capacidade)
-{
+{  
+	 // Verifica se a rede existe e se os IDs passados estao dentro dos limites validos
     if (rede == NULL || id_origem < 0 || id_destino < 0 ||
         id_origem >= rede->num_estacoes || id_destino >= rede->num_estacoes) {
         printf("Erro: IDs de estacao invalidos para o cano.\n");
@@ -71,13 +86,16 @@ void adicionar_cano(RedeDeAgua* rede, int id_origem, int id_destino, int capacid
         printf("Erro de alocacao de memoria.\n");
         return;
     }
-
+ // Insere o novo cano no inicio da lista encadeada (Lista de Adjacencia)
     novo_cano->id_destino = id_destino;
     novo_cano->capacidade = capacidade;
     novo_cano->proximo = rede->estacoes[id_origem]->primeiro_cano;
     rede->estacoes[id_origem]->primeiro_cano = novo_cano;
 }
-
+/*
+  Algoritmo de Busca em Largura (BFS) para encontrar se existe
+  um caminho hidrico entre um ponto de origem e um destino.
+ */
 void encontrar_rota_agua(RedeDeAgua* rede, int id_origem, int id_destino)
 {
     if (rede == NULL || id_origem < 0 || id_destino < 0 ||
@@ -109,7 +127,7 @@ void encontrar_rota_agua(RedeDeAgua* rede, int id_origem, int id_destino)
             achou_destino = 1;
             break;
         }
-
+ // Percorre todos os canos que saem da estacao atual
         Cano* cano_atual = rede->estacoes[atual]->primeiro_cano;
         while (cano_atual != NULL)
         {
@@ -117,13 +135,13 @@ void encontrar_rota_agua(RedeDeAgua* rede, int id_origem, int id_destino)
             if (visitados[vizinho] == 0)
             {
                 visitados[vizinho] = 1;
-                estacao_anterior[vizinho] = atual;
+                estacao_anterior[vizinho] = atual; // Regista de onde veio a agu
                 fila[fim++] = vizinho;
             }
             cano_atual = cano_atual->proximo;
         }
     }
-
+ // Apresentacao dos Resultados (Mensagens de Sucesso ou Falha)
     if (achou_destino)
     {
         printf("\nSUCESSO: Rota encontrada de [%s] para [%s]:\n",
@@ -132,7 +150,7 @@ void encontrar_rota_agua(RedeDeAgua* rede, int id_origem, int id_destino)
         int caminho[MAX_ESTACOES];
         int tamanho_caminho = 0;
         int rastreador = id_destino, i = 0;
-
+// Le o vetor de tras para a frente para imprimir a rota correta
         while (rastreador != -1)
         {
             caminho[tamanho_caminho++] = rastreador;
@@ -152,7 +170,10 @@ void encontrar_rota_agua(RedeDeAgua* rede, int id_origem, int id_destino)
         printf("\nFALHA: Nao existe conexao.\n");
     }
 }
-
+/*
+ Guarda toda a estrutura do grafo (Nos e Arestas) num ficheiro .txt
+ Retorna 1 em caso de sucesso ou 0 em caso de erro.
+ */
 int guardar_dados_txt(RedeDeAgua* rede, const char* nome_arquivo)
 {
     if (rede == NULL || nome_arquivo == NULL) {
@@ -191,6 +212,10 @@ int guardar_dados_txt(RedeDeAgua* rede, const char* nome_arquivo)
     fclose(ficheiro);
     return 1;
 }
+/*
+  Carrega a estrutura do grafo a partir de um ficheiro .txt.
+  Aloca a memoria dinamicamente e monta as listas de adjacencia.
+ */
 
 RedeDeAgua* carregar_dados_txt(const char* nome_arquivo)
 {
