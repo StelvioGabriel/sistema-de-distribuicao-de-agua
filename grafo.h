@@ -1,6 +1,4 @@
-
 #define MAX_ESTACOES 50
-
 
 typedef struct Cano {
     int id_destino;
@@ -27,6 +25,7 @@ void listar_estacoes(const RedeDeAgua* rede);
 int guardar_dados_txt(RedeDeAgua* rede, const char* arquivo);
 RedeDeAgua* carregar_dados_txt(const char* arquivo);
 void encontrar_rota_agua(RedeDeAgua* rede, int id_origem, int id_destino);
+int remover_cano(RedeDeAgua* rede, int id_origem, int id_destino);
+int remover_estacao(RedeDeAgua* rede, int id_estacao);
+void listar_todas_ligacoes(const RedeDeAgua* rede);
 void liberar_rede(RedeDeAgua* rede);
-
-
