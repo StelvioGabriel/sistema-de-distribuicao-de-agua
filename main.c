@@ -78,6 +78,9 @@ static void mostrar_menu(void)
     printf("4. Guardar dados no ficheiro\n");
     printf("5. Carregar rede a partir do ficheiro\n");
     printf("6. Encontrar rota de agua\n");
+    printf("7. Remover cano\n");
+    printf("8. Remover estacao\n");
+    printf("9. Listar todas as ligacoes (canos)\n");
     printf("0. Sair\n");
 }
 
@@ -184,6 +187,51 @@ int main(void)
                 encontrar_rota_agua(rede, origem, destino);
                 break;
             }
+            case 7: {
+                int origem = 0;
+                int destino = 0;
+                
+                listar_estacoes(rede);
+                if (rede->num_estacoes < 2) {
+                    printf("Adicione estacoes e canos primeiro.\n\n");
+                    break;
+                }
+
+                if (!ler_inteiro("ID da estacao de origem: ", &origem) ||
+                    !ler_inteiro("ID da estacao de destino (cano a remover): ", &destino)) {
+                    printf("Operacao cancelada.\n\n");
+                    break;
+                }
+
+                if (remover_cano(rede, origem, destino)) {
+                    printf("Cano removido com sucesso da memoria.\n\n");
+                } else {
+                    printf("Erro: Nao foi possivel remover o cano. Verifique se a ligacao existe.\n\n");
+                }
+                break;
+            }
+            case 8: {
+                int id_estacao = 0;
+                
+                listar_estacoes(rede);
+                if (rede->num_estacoes == 0) break;
+
+                if (!ler_inteiro("ID da estacao a remover: ", &id_estacao)) {
+                    printf("Operacao cancelada.\n\n");
+                    break;
+                }
+
+                if (remover_estacao(rede, id_estacao)) {
+                    printf("Estacao removida com sucesso. Nota: Os IDs das estacoes podem ter sido reorganizados.\n\n");
+                } else {
+                    printf("Erro: Nao foi possivel remover a estacao. ID invalido.\n\n");
+                }
+                break;
+            }
+            case 9: {
+                listar_todas_ligacoes(rede);
+                break;
+            }
             case 0:
                 printf("A encerrar o programa...\n");
                 break;
@@ -196,3 +244,4 @@ int main(void)
     liberar_rede(rede);
     return 0;
 }
+
