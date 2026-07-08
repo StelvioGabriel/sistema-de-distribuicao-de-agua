@@ -64,7 +64,7 @@ int adicionar_estacao(RedeDeAgua* rede, const char* nome, const char* tipo)
 
     strcpy(nova->nome, nome);
     strcpy(nova->tipo, tipo);
-    nova->primeiro_cano = NULL; // Inicia a lista de adjacencia vazia
+    nova->primeiro_cano = NULL;
 
     int id = rede->num_estacoes;
     rede->estacoes[id] = nova;
@@ -78,7 +78,7 @@ int adicionar_estacao(RedeDeAgua* rede, const char* nome, const char* tipo)
  */
 void adicionar_cano(RedeDeAgua* rede, int id_origem, int id_destino, int capacidade)
 {
-    // Verifica se a rede existe e se os IDs passados estao dentro dos limites validos
+   
     if (rede == NULL || id_origem < 0 || id_destino < 0 ||
         id_origem >= rede->num_estacoes || id_destino >= rede->num_estacoes) {
         printf("Erro: IDs de estacao invalidos para o cano.\n");
@@ -151,7 +151,7 @@ void encontrar_rota_agua(RedeDeAgua* rede, int id_origem, int id_destino)
         }
     }
 
-    // Apresentacao dos Resultados (Mensagens de Sucesso ou Falha)
+    // Apresentacao dos Resultados 
     if (achou_destino)
     {
         printf("\nSUCESSO: Rota encontrada de [%s] para [%s]:\n",
@@ -246,16 +246,16 @@ int remover_estacao(RedeDeAgua* rede, int id_estacao)
         free(temp);
     }
 
-    // 3. Libertar a estacao em si da memoria
+
     free(rede->estacoes[id_estacao]);
 
     // 4. Reorganizar o array para nao deixar buracos (Swap com a ultima estacao)
     int id_ultimo = rede->num_estacoes - 1;
     if (id_estacao != id_ultimo) {
-        // Movemos a ultima estacao do array para o espaco que ficou vazio
+ 
         rede->estacoes[id_estacao] = rede->estacoes[id_ultimo];
         
-        // Agora precisamos de avisar o grafo inteiro que o ID da ultima estacao mudou!
+        
         for (i = 0; i < rede->num_estacoes - 1; i++) { 
             Cano* c = rede->estacoes[i]->primeiro_cano;
             while (c != NULL) {
@@ -267,7 +267,7 @@ int remover_estacao(RedeDeAgua* rede, int id_estacao)
         }
     }
 
-    // Limpa a ultima posicao e diminui o contador
+  
     rede->estacoes[id_ultimo] = NULL;
     rede->num_estacoes--;
 
@@ -414,7 +414,7 @@ RedeDeAgua* carregar_dados_txt(const char* nome_arquivo)
             return NULL;
         }
 
-        *separador = '\0'; // Divide a string no local do ponto e virgula
+        *separador = '\0';
         char* nome = linha;
         char* tipo = separador + 1;
 
@@ -462,11 +462,11 @@ RedeDeAgua* carregar_dados_txt(const char* nome_arquivo)
     }
 
     fclose(ficheiro);
-    return rede; // Retorna o grafo montado em memoria
+    return rede; 
 }
 
 /*
- * Imprime o conteudo cru do ficheiro .txt no terminal.
+ * Imprime o conteudo do ficheiro .txt no terminal.
  */
 void ler_dados_txt(const char* nome_arquivo)
 {
@@ -502,7 +502,7 @@ void liberar_rede(RedeDeAgua* rede)
     // Percorre cada vertice
     for (i = 0; i < rede->num_estacoes; i++)
     {
-        // Liberta a lista encadeada (canos) atrelada ao vertice
+       
         Cano* atual = rede->estacoes[i]->primeiro_cano;
         while (atual != NULL)
         {
@@ -510,9 +510,9 @@ void liberar_rede(RedeDeAgua* rede)
             atual = atual->proximo;
             free(temp);
         }
-        // Liberta a estrutura do vertice em si
+ 
         free(rede->estacoes[i]);
     }
-    // Liberta a base do Grafo
+   
     free(rede);
 }
